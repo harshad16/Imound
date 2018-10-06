@@ -57,9 +57,14 @@ def home():
 def main():
 	print('welcome to imound')
 	if request.method == 'POST':
-		file = request.files['file']
-		with open('text.jpeg', 'wb') as f:
-			f.write(file)
+		#print(request.body)
+		print(request)
+		img_file = request.files['file']
+		print(img_file)
+		print(type(img_file))
+		if img_file:
+        		filename = "aeroplane"
+        		img_file.save(filename)
         
 
 	img_jpeg = convertImg(sys.argv[1])
