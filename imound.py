@@ -1,7 +1,12 @@
 import os
 import subprocess
 import sys
+import requests
 from PIL import Image
+from flask import Flask, render_template, request, session, flash, url_for, redirect
+
+
+app = Flask(__name__)
 
 
 # convert images from all format tp jpeg 
@@ -21,24 +26,53 @@ def getlabel(filename):
 
 # get the sound from the api
 def getsound(label):
-	
-	pass
+	search_url = 'https://freesound.org/apiv2/search/text/?query={}&token=7W7CDnDfQeadgF30v2oPo4gBNFe2e6vXkg4r3TDg'.format(label)
+	res = requests.get(search_url)
+	if res.status_code == 200:
+		for sound_detail in r.json().get('results'):
+			sound_id = sound_detail.get(id)
+			print("got the id:",sound_id)
+			break
+
+	download_url = 'https://freesound.org/apiv2/sounds/{}/download/'.format(sound_id)
+
+	r = requests.get(download_url,headers=headers)
+	print(r.status_code)
+	with open(label+'.ogg', 'wb') as f:
+		f.write(r.content)
+	return label+'.ogg'
 
 # add the sound to the image
-def addSoundtoImg(image,sound):
+def addSoundtoImg(image,sound,label):
 	#Img format is always jpeg, sound format is not known ffmpeg uses automatic best possible codec
 	# If the frame rate and the codecs are not good change this line of code.
-	os.system('ffmpeg -i '+image+' -i '+sound+' ep1.flv')
-	return 'ep1.flv'
+	os.system('ffmpeg -i '+image+' -i '+sound+' '+label+'.flv')
+	return str(label)+'.flv'
 
-
+@app.route('/')
+@app.route('/getImage', methods=['GET', 'POST'])
 def main():
+	print('welcome to imound')
+	if request.method == 'POST':
+		print(request.text)
+		print(request.content)
+		file = request.files['file']
+        
+
 	img_jpeg = convertImg(sys.argv[1])
 	label = getlabel(img_jpeg)
-	print(label)
+	print("label",label)
 	sound = getsound(label)
-	#video = addSoundtoImg(img_jpeg,sound)
-	
+	print("sound",sound)
+	video = addSoundtoImg(img_jpeg,sound,label)
+	print("video",video)
+	video_file = open(video, 'rb')
+	response = requests.post(url, files=video_file)
+	print("Status_Code of return API:",response.status_code)
+	if response.status_code == 200:
+		return True
+	else:
+		return False
 
 if __name__ == '__main__':
-	main()
+	app.run(host='0.0.0.0',port='5000')
