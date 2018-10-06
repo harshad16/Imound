@@ -56,31 +56,36 @@ def home():
 @app.route('/getImage', methods=['GET', 'POST'])
 def main():
 	print('welcome to imound')
-	if request.method == 'POST':
-		#print(request.body)
-		print(request)
-		img_file = request.files['file']
-		print(img_file)
-		print(type(img_file))
-		if img_file:
-        		filename = "aeroplane"
-        		img_file.save(filename)
-        
-
-	img_jpeg = convertImg(sys.argv[1])
-	label = getlabel(img_jpeg)
-	print("label",label)
-	sound = getsound(label)
-	print("sound",sound)
-	video = addSoundtoImg(img_jpeg,sound,label)
-	print("video",video)
-	video_file = open(video, 'rb')
-	response = requests.post(url, files={'file':video_file})
-	print("Status_Code of return API:",response.status_code)
-	if response.status_code == 200:
-		return True
-	else:
-		return False
+	try:
+		if request.method == 'POST':
+			print(request)
+			img_file = request.files['file']
+			print(img_file)
+			print(type(img_file))
+			if img_file:
+	        		filename = "img"
+	        		img_file.save(filename)
+	    if filename:
+	    	img_jpeg = convertImg(filename)
+	    elif sys.argv[1]:
+			img_jpeg = convertImg(sys.argv[1])
+		else:
+			raise Exception()
+		label = getlabel(img_jpeg)
+		print("label",label)
+		sound = getsound(label)
+		print("sound",sound)
+		video = addSoundtoImg(img_jpeg,sound,label)
+		print("video",video)
+		video_file = open(video, 'rb')
+		response = requests.post(url, files={'file':video_file})
+		print("Status_Code of return API:",response.status_code)
+		if response.status_code == 200:
+			return True
+		else:
+			return False
+	except:
+		pass
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',port='5000')
