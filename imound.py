@@ -26,16 +26,19 @@ def getlabel(filename):
 
 # get the sound from the api
 def getsound(label):
+	headers={'Authorization': 'Bearer 1n3SF3B1cXejCiQymF0fpsvNXitE7b'}
 	search_url = 'https://freesound.org/apiv2/search/text/?query={}&token=7W7CDnDfQeadgF30v2oPo4gBNFe2e6vXkg4r3TDg'.format(label)
 	res = requests.get(search_url)
 	if res.status_code == 200:
+		print(res.json().get('results'))
 		for sound_detail in res.json().get('results'):
-			sound_id = sound_detail.get(id)
+			print(sound_detail)
+			sound_id = sound_detail.get('id')
 			print("got the id:",sound_id)
 			break
 
 	download_url = 'https://freesound.org/apiv2/sounds/{}/download/'.format(sound_id)
-
+	print(download_url)
 	r = requests.get(download_url,headers=headers)
 	print(r.status_code)
 	with open(label+'.ogg', 'wb') as f:
@@ -58,16 +61,16 @@ def main():
 	print('welcome to imound')
 	try:
 		if request.method == 'POST':
-			print(request)
+			print(request.form)
 			img_file = request.files['file']
 			print(img_file)
 			print(type(img_file))
 			if img_file:
 	        		filename = "img"
 	        		img_file.save(filename)
-	    if filename:
-	    	img_jpeg = convertImg(filename)
-	    elif sys.argv[1]:
+		if filename:
+	    		img_jpeg = convertImg(filename)
+		elif sys.argv[1]:
 			img_jpeg = convertImg(sys.argv[1])
 		else:
 			raise Exception()

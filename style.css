@@ -28,16 +28,10 @@ li a:hover {
 
 div{
     height:600px;
-    width: 600px;
+    width: 100%	;
+    display: flex;
 }
 
-.des{
-    width: 100%;
-    height: auto;
-    font
-}
-
-.button{
-    margin: 50px auto;
-    font-size:25px;
+form{
+	margin: 50px auto;
 }
