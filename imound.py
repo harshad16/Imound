@@ -16,7 +16,7 @@ def convertImg(filename):
 def getlabel(filename):
 	labels = subprocess.check_output('python3 classify_image.py --image_file '+filename+' --num_top_predictions=1',shell=True)
 	labels = labels.decode("utf-8").split(',')
-	return labels[0].replace(" ","")
+	return labels[0].replace(" ","").split("(")[0]
 
 
 # get the sound from the api
@@ -35,8 +35,9 @@ def addSoundtoImg(image,sound):
 def main():
 	img_jpeg = convertImg(sys.argv[1])
 	label = getlabel(img_jpeg)
+	print(label)
 	sound = getsound(label)
-	video = addSoundtoImg(img_jpeg,sound)
+	#video = addSoundtoImg(img_jpeg,sound)
 	
 
 if __name__ == '__main__':
