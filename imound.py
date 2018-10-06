@@ -3,7 +3,7 @@ import subprocess
 import sys
 import requests
 from PIL import Image
-from flask import Flask, render_template, request, session, flash, url_for, redirect
+from flask import Flask, render_template, request, session, flash, url_for, redirect, send_file
 
 
 app = Flask(__name__)
@@ -36,14 +36,21 @@ def getsound(label):
 			sound_id = sound_detail.get('id')
 			print("got the id:",sound_id)
 			break
+	mypath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'sound')
+	onlyfiles = [f.split('.') for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
+	for file_name in onlyfiles:
+		if label in filename:
+			sound_name = filename
 
-	download_url = 'https://freesound.org/apiv2/sounds/{}/download/'.format(sound_id)
-	print(download_url)
-	r = requests.get(download_url,headers=headers)
-	print(r.status_code)
-	with open(label+'.ogg', 'wb') as f:
-		f.write(r.content)
-	return label+'.ogg'
+	else:
+		download_url = 'https://freesound.org/apiv2/sounds/{}/download/'.format(sound_id)
+		print(download_url)
+		r = requests.get(download_url,headers=headers)
+		print(r.status_code)
+		with open(label+'.ogg', 'wb') as f:
+			f.write(r.content)
+		sound_name = label+'.ogg'
+		return sound_name
 
 # add the sound to the image
 def addSoundtoImg(image,sound,label):
@@ -66,10 +73,10 @@ def main():
 			print(img_file)
 			print(type(img_file))
 			if img_file:
-	        		filename = "img"
-	        		img_file.save(filename)
+        		filename = "img"
+        		img_file.save(filename)
 		if filename:
-	    		img_jpeg = convertImg(filename)
+	    	img_jpeg = convertImg(filename)
 		elif sys.argv[1]:
 			img_jpeg = convertImg(sys.argv[1])
 		else:
@@ -81,10 +88,8 @@ def main():
 		video = addSoundtoImg(img_jpeg,sound,label)
 		print("video",video)
 		video_file = open(video, 'rb')
-		response = requests.post(url, files={'file':video_file})
-		print("Status_Code of return API:",response.status_code)
-		if response.status_code == 200:
-			return True
+		if video_file:
+			return send_file(video_file, mimetype='video/flv',as_attachment= True)
 		else:
 			return False
 	except:
