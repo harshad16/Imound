@@ -50,6 +50,9 @@ def addSoundtoImg(image,sound,label):
 	return str(label)+'.flv'
 
 @app.route('/')
+def home():
+	return render_template('index.html')
+
 @app.route('/getImage', methods=['GET', 'POST'])
 def main():
 	print('welcome to imound')
