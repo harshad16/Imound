@@ -63,7 +63,7 @@ def addSoundtoImg(image,sound,label):
 
 @app.route('/')
 def home():
-	return render_template('index.html')
+	return render_template('in.html')
 
 @app.route('/getImage', methods=['GET', 'POST'])
 def main():
