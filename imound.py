@@ -91,7 +91,7 @@ def main():
 			print("video",video)
 			video_file = open(video, 'rb')
 			if video_file:
-				return send_file(video, mimetype='video/flv')
+				return send_file(video, mimetype='video/flv',as_attachment=True)
 			else:
 				return False
 
