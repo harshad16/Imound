@@ -25,15 +25,19 @@ def getsound(label):
 	pass
 
 # add the sound to the image
-def addSoundtoImg():
-	pass
+def addSoundtoImg(image,sound):
+	#Img format is always jpeg, sound format is not known ffmpeg uses automatic best possible codec
+	# If the frame rate and the codecs are not good change this line of code.
+	os.system('ffmpeg -i '+image+' -i '+sound+' ep1.flv')
+	return 'ep1.flv'
+
 
 def main():
 	img_jpeg = convertImg(sys.argv[1])
 	label = getlabel(img_jpeg)
 	sound = getsound(label)
-	print(label)
-	pass
+	video = addSoundtoImg(img_jpeg,sound)
+	
 
 if __name__ == '__main__':
 	main()
