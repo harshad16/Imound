@@ -29,7 +29,7 @@ def getsound(label):
 	search_url = 'https://freesound.org/apiv2/search/text/?query={}&token=7W7CDnDfQeadgF30v2oPo4gBNFe2e6vXkg4r3TDg'.format(label)
 	res = requests.get(search_url)
 	if res.status_code == 200:
-		for sound_detail in r.json().get('results'):
+		for sound_detail in res.json().get('results'):
 			sound_id = sound_detail.get(id)
 			print("got the id:",sound_id)
 			break
@@ -57,9 +57,9 @@ def home():
 def main():
 	print('welcome to imound')
 	if request.method == 'POST':
-		print(request.text)
-		print(request.content)
 		file = request.files['file']
+		with open('text.jpeg', 'wb') as f:
+			f.write(file)
         
 
 	img_jpeg = convertImg(sys.argv[1])
@@ -70,7 +70,7 @@ def main():
 	video = addSoundtoImg(img_jpeg,sound,label)
 	print("video",video)
 	video_file = open(video, 'rb')
-	response = requests.post(url, files=video_file)
+	response = requests.post(url, files={'file':video_file})
 	print("Status_Code of return API:",response.status_code)
 	if response.status_code == 200:
 		return True
